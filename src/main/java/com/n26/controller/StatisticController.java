@@ -24,7 +24,7 @@ public class StatisticController {
     @GetMapping
     public ResponseEntity<Statistic> getStatistics() {
 
-        List<Transaction> transactions = transactionService.findAllTransactions();
+        List<Transaction> transactions = transactionService.getInDateTransactions();
         Statistic statistics = statisticsService.create(transactions);
 
         return ResponseEntity.ok(statistics);

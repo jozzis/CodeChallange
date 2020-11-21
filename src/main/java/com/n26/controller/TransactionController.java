@@ -29,10 +29,10 @@ public class TransactionController {
                                 .body("More than 60 seconds have passed since this transaction. " +
                                         "For this reason it will not be saved.");
                     } else {
-                        transactionService.createTransactionList();
+                        transactionService.getInDateTransactions();
                         transactionService.addTransaction(transaction);
                         return ResponseEntity.status(HttpStatus.valueOf(201))
-                                .body(transactionService.findAllTransactions());
+                                .body(transactionService.getInDateTransactions().toString());
                     }
                 }
         } catch (Exception e) {

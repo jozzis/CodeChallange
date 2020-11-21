@@ -18,6 +18,16 @@ public class TransactionService {
         }
     }
 
+    public List<Transaction> getInDateTransactions() {
+        createTransactionList();
+        transactions.removeIf(x->(x.getTransactionDate().isBefore(ZonedDateTime.now().minusSeconds(60))));
+        return transactions;
+    }
+
+    public void clearTransactions() {
+        transactions.clear();
+    }
+
     public void addTransaction(Transaction transaction) {
         transactions.add(transaction);
     }
@@ -33,14 +43,5 @@ public class TransactionService {
         } else {
             return false;
         }
-    }
-
-    public List<Transaction> findAllTransactions() {
-        createTransactionList();
-        return transactions;
-    }
-
-    public void clearTransactions() {
-        transactions.clear();
     }
 }

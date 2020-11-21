@@ -10,8 +10,8 @@ import java.math.BigDecimal;
 public class Statistic {
 
     private BigDecimal avg;
-    private BigDecimal max;
     private BigDecimal sum;
+    private BigDecimal max;
     private BigDecimal min;
     private long count;
 
