@@ -10,23 +10,26 @@ import java.time.ZonedDateTime;
 @Data
 public class Transaction {
 
-    private ZonedDateTime timestamp;
-    private BigDecimal amount;
+    private String timestamp;
+    private String amount;
 
-    public BigDecimal getAmount() {
+    public String getAmount() {
         return this.amount;
     }
 
-    public void setAmount(BigDecimal amount) {
+    public void setAmount(String amount) {
         this.amount = amount;
     }
 
-    public ZonedDateTime getTimestamp() {
+    public String getTimestamp() {
         return this.timestamp;
     }
 
-    public void setTimestamp(ZonedDateTime timestamp) {
+    public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
     }
 
+    public BigDecimal parseAmount(String amount){
+        return new BigDecimal(amount);
+    }
 }

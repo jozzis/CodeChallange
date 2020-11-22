@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+
 @RestController
 @RequestMapping("/transactions")
 public class TransactionController {
@@ -16,27 +18,18 @@ public class TransactionController {
 
     @PostMapping (consumes = "application/json", produces = "application/json")
     @ResponseBody
-    public ResponseEntity add(@RequestBody Transaction transaction){
+    public ResponseEntity add(@RequestBody Transaction transaction) {
         try {
-                if(transactionService.isTransactionInFuture(transaction)) {
-                    return ResponseEntity.status(HttpStatus.valueOf(422))
-                            .body("Transaction Date is in future.");
-                } else {
-                    if (transactionService.isTransactionOlder(transaction)) {
-                        return ResponseEntity.status(HttpStatus.valueOf(204))
-                                .body("More than 60 seconds have passed since this transaction. " +
-                                        "For this reason it will not be saved.");
-                    } else {
-                        transactionService.getInDateTransactions();
-                        transactionService.addTransaction(transaction);
-                        return ResponseEntity.status(HttpStatus.valueOf(201))
-                                .body(transactionService.getInDateTransactions().toString());
-                    }
-                }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(null);
+            HashMap isJSONValidHash = transactionService.handleJSON(transaction);
+            if(isJSONValidHash.get("hasError") != (Boolean)true){
+                transactionService.addTransaction(transaction);
+            }
+            return ResponseEntity.status(HttpStatus.valueOf((Integer) isJSONValidHash.get("httpStatus")))
+                        .body((String) isJSONValidHash.get("message"));
+            }catch(Exception e){
+                return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(null);
+            }
         }
-    }
 
     @DeleteMapping
     public ResponseEntity<Boolean> delete() {

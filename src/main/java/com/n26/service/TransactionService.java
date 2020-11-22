@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -21,27 +22,41 @@ public class TransactionService {
         }
     }
 
+    public HashMap handleJSON(Transaction transaction){
+        try{
+            BigDecimal amount = new BigDecimal(transaction.getAmount());
+            ZonedDateTime timestamp = ZonedDateTime.parse(transaction.getTimestamp());
+            if (timestamp.isAfter(ZonedDateTime.now())){
+                return fillJSONValidationMap(true
+                        ,"The date introduced is in the future."
+                        ,422 );
+            }else if(timestamp.isBefore(ZonedDateTime.now(ZoneOffset.UTC).minusSeconds(60))) {
+                return fillJSONValidationMap(true
+                        ,"This transaction is older than 60sec. It will no longer be considered for statistics."
+                        ,204 );
+            }
+        } catch (Exception e) {
+            return fillJSONValidationMap(true
+                                ,"The fields should be parsable to following values:\n" +
+                                                    " amount: BigDecimal\n" +
+                                                    " timeStamp format: YYYY-MM-DD'T'hh:mm:ss.sssZ"
+                                ,422 );
+        }
+        return fillJSONValidationMap(false,"Transaction Created with Success.", 201);
+    }
+
+    private HashMap fillJSONValidationMap(Boolean hasError, String message, Integer httpStatus){
+        HashMap<String,Object> jsonValidationMap = new HashMap<String, Object>();
+        jsonValidationMap.put("hasError", hasError);
+        jsonValidationMap.put("message", message);
+        jsonValidationMap.put("httpStatus", httpStatus);
+        return jsonValidationMap;
+    }
+
     public List<Transaction> getInDateTransactions() {
         createTransactionList();
-        transactions.removeIf(x->(x.getTimestamp().isBefore(ZonedDateTime.now().minusSeconds(60))));
+        transactions.removeIf(x->ZonedDateTime.parse(x.getTimestamp()).isBefore(ZonedDateTime.now().minusSeconds(60)));
         return transactions;
-    }
-
-    public Transaction createTransaction(JSONObject jsonTransaction) throws JSONException {
-        Transaction transaction = new Transaction();
-        transaction.setAmount(jsonTransaction.get("amount") != null ? parseAmount(jsonTransaction) : transaction.getAmount());
-        transaction.setTimestamp(jsonTransaction.get("timestamp") != null ?
-                parseTimestamp(jsonTransaction) : transaction.getTimestamp());
-        return transaction;
-    }
-
-    private BigDecimal parseAmount(JSONObject transaction) throws JSONException {
-        return new BigDecimal((String) transaction.get("amount"));
-    }
-
-    private ZonedDateTime parseTimestamp(JSONObject transaction) throws JSONException {
-        String timestamp = (String) transaction.get("timestamp");
-        return ZonedDateTime.parse(timestamp);
     }
 
     public void clearTransactions() {
@@ -50,20 +65,8 @@ public class TransactionService {
     }
 
     public void addTransaction(Transaction transaction) {
+        getInDateTransactions();
         transactions.add(transaction);
-    }
-
-    public boolean isTransactionInFuture(Transaction transaction) {
-        return transaction.getTimestamp().isAfter(ZonedDateTime.now());
-    }
-
-    public boolean isTransactionOlder(Transaction transaction) {
-        ZonedDateTime timestamp = transaction.getTimestamp();
-        if (timestamp.isBefore(ZonedDateTime.now(ZoneOffset.UTC).minusSeconds(60))) {
-            return true;
-        } else {
-            return false;
-        }
     }
 
     public void clearObjects() {
