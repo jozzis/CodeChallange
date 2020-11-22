@@ -14,7 +14,7 @@ import java.util.List;
 public class TransactionService {
     private List<Transaction> transactions;
 
-    public void createTransactionList() {
+    public synchronized void createTransactionList() {
         if(transactions == null) {
             transactions = new ArrayList<>();
         }
