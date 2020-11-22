@@ -27,4 +27,5 @@ public class StatisticService {
 
         return statistics;
     }
+
 }
