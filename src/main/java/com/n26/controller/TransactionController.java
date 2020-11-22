@@ -13,7 +13,6 @@ import java.util.HashMap;
 @RequestMapping("/transactions")
 public class TransactionController {
 
-    @Autowired
     private TransactionService transactionService;
 
     @PostMapping (consumes = "application/json", produces = "application/json")

@@ -1,11 +1,7 @@
 package com.n26.model;
 
-import lombok.*;
-
 import java.math.BigDecimal;
 
-@AllArgsConstructor
-@NoArgsConstructor
 public class Transaction {
 
     private String timestamp;

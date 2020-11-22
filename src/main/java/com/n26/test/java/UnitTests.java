@@ -5,18 +5,15 @@ import com.n26.model.Statistic;
 import com.n26.model.Transaction;
 import com.n26.service.StatisticService;
 import com.n26.service.TransactionService;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
-import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 
@@ -27,9 +24,8 @@ import static org.junit.Assert.assertNotNull;
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class })
 @ActiveProfiles("test")
 public class UnitTests {
-    @Autowired
+
     private TransactionService transactionService = new TransactionService();
-    @Autowired
     private StatisticService statisticService = new StatisticService();
     private ObjectMapper mapper = new ObjectMapper();
 
