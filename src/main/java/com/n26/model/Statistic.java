@@ -6,7 +6,6 @@ import java.math.BigDecimal;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 public class Statistic {
 
     private String avg;

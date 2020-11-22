@@ -1,8 +1,6 @@
 package com.n26.service;
 
 import com.n26.model.Transaction;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
