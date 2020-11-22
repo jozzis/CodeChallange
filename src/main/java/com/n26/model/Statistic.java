@@ -9,10 +9,10 @@ import java.math.BigDecimal;
 @Data
 public class Statistic {
 
-    private BigDecimal avg;
-    private BigDecimal sum;
-    private BigDecimal max;
-    private BigDecimal min;
+    private String avg;
+    private String sum;
+    private String max;
+    private String min;
     private long count;
 
     public void setCount(long count) {
@@ -23,30 +23,30 @@ public class Statistic {
     }
 
     public void setAvg(BigDecimal avg) {
-        this.avg = avg;
+        this.avg = avg.toString();
     }
-    public BigDecimal getAvg() {
+    public String getAvg() {
         return this.avg = avg;
     }
 
     public void setMin(BigDecimal min) {
-        this.min = min;
+        this.min = min.toString();
     }
-    public BigDecimal getMin() {
+    public String getMin() {
         return this.min = min;
     }
 
     public void setMax(BigDecimal max) {
-        this.max = max;
+        this.max = max.toString();
     }
-    public BigDecimal getMax() {
+    public String getMax() {
         return this.max = max;
     }
 
     public void setSum(BigDecimal sum) {
-        this.sum = sum;
+        this.sum = sum.toString();
     }
-    public BigDecimal getSum() {
+    public String getSum() {
         return this.sum = sum;
     }
 }

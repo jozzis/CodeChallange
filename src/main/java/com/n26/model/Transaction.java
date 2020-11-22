@@ -10,7 +10,7 @@ import java.time.ZonedDateTime;
 @Data
 public class Transaction {
 
-    private ZonedDateTime transactionDate;
+    private ZonedDateTime timestamp;
     private BigDecimal amount;
 
     public BigDecimal getAmount() {
@@ -21,12 +21,12 @@ public class Transaction {
         this.amount = amount;
     }
 
-    public ZonedDateTime getTransactionDate() {
-        return this.transactionDate;
+    public ZonedDateTime getTimestamp() {
+        return this.timestamp;
     }
 
-    public void setTransactionDate(ZonedDateTime transactionDate) {
-        this.transactionDate = transactionDate;
+    public void setTimestamp(ZonedDateTime timestamp) {
+        this.timestamp = timestamp;
     }
 
 }

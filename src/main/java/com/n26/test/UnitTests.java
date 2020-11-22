@@ -33,7 +33,7 @@ public class UnitTests {
         transactionService.createTransactionList();
     }
 
-    @Test
+    @org.junit.jupiter.api.Test
     public void shouldReturnNotNullTransactionService() {
         assertNotNull(transactionService);
     }
@@ -51,13 +51,13 @@ public class UnitTests {
 
         JSONObject json = new JSONObject();
         json.put("amount", "22.88");
-        json.put("transactionDate", now);
+        json.put("timestamp", now);
 
         Transaction transaction = transactionService.createTransaction(json);
 
         assertNotNull(transaction);
         assertEquals(transaction.getAmount().toString(), json.get("amount"));
-        assertEquals(transaction.getTransactionDate().toString(), json.get("transactionDate"));
+        assertEquals(transaction.getTimestamp().toString(), json.get("timestamp"));
     }
 
     @Test
@@ -67,7 +67,7 @@ public class UnitTests {
 
         JSONObject json = new JSONObject();
         json.put("amount", "10");
-        json.put("transactionDate", "2021-09-11T09:59:51.312Z");
+        json.put("timestamp", "2021-09-11T09:59:51.312Z");
 
         boolean transactionInFuture = transactionService.
                 isTransactionInFuture(transactionService.createTransaction(json));
@@ -85,13 +85,13 @@ public class UnitTests {
 
         JSONObject json1 = new JSONObject();
         json1.put("amount", "100");
-        json1.put("transactionDate", now);
+        json1.put("timestamp", now);
         transactionService.addTransaction(transactionService.
                                             createTransaction(json1));
 
         JSONObject json2 = new JSONObject();
         json2.put("amount", "200.0");
-        json2.put("transactionDate", now);
+        json2.put("timestamp", now);
         transactionService.addTransaction(transactionService.
                                             createTransaction(json2));
 

@@ -23,15 +23,15 @@ public class TransactionService {
 
     public List<Transaction> getInDateTransactions() {
         createTransactionList();
-        transactions.removeIf(x->(x.getTransactionDate().isBefore(ZonedDateTime.now().minusSeconds(60))));
+        transactions.removeIf(x->(x.getTimestamp().isBefore(ZonedDateTime.now().minusSeconds(60))));
         return transactions;
     }
 
     public Transaction createTransaction(JSONObject jsonTransaction) throws JSONException {
         Transaction transaction = new Transaction();
         transaction.setAmount(jsonTransaction.get("amount") != null ? parseAmount(jsonTransaction) : transaction.getAmount());
-        transaction.setTransactionDate(jsonTransaction.get("transactionDate") != null ?
-                parseTransactionDate(jsonTransaction) : transaction.getTransactionDate());
+        transaction.setTimestamp(jsonTransaction.get("timestamp") != null ?
+                parseTimestamp(jsonTransaction) : transaction.getTimestamp());
         return transaction;
     }
 
@@ -39,12 +39,13 @@ public class TransactionService {
         return new BigDecimal((String) transaction.get("amount"));
     }
 
-    private ZonedDateTime parseTransactionDate(JSONObject transaction) throws JSONException {
-        String transactionDate = (String) transaction.get("transactionDate");
-        return ZonedDateTime.parse(transactionDate);
+    private ZonedDateTime parseTimestamp(JSONObject transaction) throws JSONException {
+        String timestamp = (String) transaction.get("timestamp");
+        return ZonedDateTime.parse(timestamp);
     }
 
     public void clearTransactions() {
+        createTransactionList();
         transactions.clear();
     }
 
@@ -53,12 +54,12 @@ public class TransactionService {
     }
 
     public boolean isTransactionInFuture(Transaction transaction) {
-        return transaction.getTransactionDate().isAfter(ZonedDateTime.now());
+        return transaction.getTimestamp().isAfter(ZonedDateTime.now());
     }
 
     public boolean isTransactionOlder(Transaction transaction) {
-        ZonedDateTime transactionDate = transaction.getTransactionDate();
-        if (transactionDate.isBefore(ZonedDateTime.now(ZoneOffset.UTC).minusSeconds(60))) {
+        ZonedDateTime timestamp = transaction.getTimestamp();
+        if (timestamp.isBefore(ZonedDateTime.now(ZoneOffset.UTC).minusSeconds(60))) {
             return true;
         } else {
             return false;
