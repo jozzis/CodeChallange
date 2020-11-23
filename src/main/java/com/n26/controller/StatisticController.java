@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/statistics")
 public class StatisticController {
+
     @Autowired
     private TransactionService transactionService;
     @Autowired
@@ -27,7 +28,6 @@ public class StatisticController {
      */
     @GetMapping
     public ResponseEntity<Statistic> getStatistics() {
-
         Statistic statistics = statisticsService.createStatistic(transactionService.getInDateTransactions());
         return ResponseEntity.ok(statistics);
     }

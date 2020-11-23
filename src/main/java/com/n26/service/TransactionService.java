@@ -38,23 +38,31 @@ public class TransactionService {
      */
     public HashMap checkJSON(Transaction transaction){
         try{
-            /* try to parse JSON fields */
-            BigDecimal amount = new BigDecimal(transaction.getAmount());
-            ZonedDateTime timestamp = ZonedDateTime.parse(transaction.getTimestamp());
-
-            /* check if transaction is in future */
-            if (timestamp.isAfter(ZonedDateTime.now())){
+            /* Check if JSON is valid */
+            if(transaction.getAmount()==null || transaction.getTimestamp()==null){
                 return fillJSONValidationMap(true
-                        ,"The date introduced is in the future."
-                        ,422 );
+                        ,"The JSON is not valid."
+                        ,400 );
+            }else {
 
-            /* check if transaction is older than 60sec */
-            }else if(timestamp.isBefore(ZonedDateTime.now(ZoneOffset.UTC).minusSeconds(60))) {
-                return fillJSONValidationMap(true
-                        ,"This transaction is older than 60sec. It will no longer be considered for statistics."
-                        ,204 );
+                /* try to parse JSON fields */
+                BigDecimal amount = new BigDecimal(transaction.getAmount());
+                ZonedDateTime timestamp = ZonedDateTime.parse(transaction.getTimestamp());
+
+                /* check if transaction is in future */
+                if (timestamp.isAfter(ZonedDateTime.now())) {
+                    return fillJSONValidationMap(true
+                            , "The date introduced is in the future."
+                            , 422);
+                }
+
+                /* check if transaction is older than 60sec */
+                if (timestamp.isBefore(ZonedDateTime.now(ZoneOffset.UTC).minusSeconds(60))) {
+                    return fillJSONValidationMap(true
+                            , "This transaction is older than 60sec. It will no longer be considered for statistics."
+                            , 204);
+                }
             }
-
         /* JSON fields are not parsable */
         } catch (Exception e) {
             return fillJSONValidationMap(true

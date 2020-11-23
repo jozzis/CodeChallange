@@ -5,7 +5,9 @@ import com.n26.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.HashMap;
 
 /**
@@ -14,6 +16,7 @@ import java.util.HashMap;
 @RestController
 @RequestMapping("/transactions")
 public class TransactionController {
+
     @Autowired
     private TransactionService transactionService;
 
@@ -33,7 +36,7 @@ public class TransactionController {
      */
     @PostMapping (consumes = "application/json", produces = "application/json")
     @ResponseBody
-    public ResponseEntity add(@RequestBody Transaction transaction) {
+    public ResponseEntity add(@Validated final @RequestBody Transaction transaction) {
         try {
             /* check if JSON is valid */
             HashMap isJSONValidHash = transactionService.checkJSON(transaction);
@@ -48,7 +51,7 @@ public class TransactionController {
                         .body((String) isJSONValidHash.get("message"));
 
             }catch(Exception e){
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error while making transaction: " + e.getMessage());
             }
         }
 
@@ -58,12 +61,12 @@ public class TransactionController {
      * @return ResponseEntity (204)
      */
     @DeleteMapping
-    public ResponseEntity<Boolean> delete() {
+    public ResponseEntity delete() {
         try {
             transactionService.clearTransactions();
             return ResponseEntity.status(HttpStatus.valueOf(204)).body(null);
         }catch(Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
         }
     }
 }

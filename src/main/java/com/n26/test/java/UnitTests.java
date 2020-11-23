@@ -78,13 +78,35 @@ public class UnitTests {
     }
 
     /*
-     * Test 4 : Call checkJSON method with a transaction date in the future.
+     * Test 4 : Call checkJSON method with a null JSON.
+     * Expected : testHashMap = {hasError   = true,
+     *                           message    = failedMessage,
+     *                           httpStatus = 400}
+     **/
+    @Test
+    @Order(4)
+    public void shouldReturnJSONHandledIsNotValid() throws Exception {
+        String failedMessage = "The JSON is not valid.";
+
+        JSONObject json = new JSONObject();
+        Transaction transaction = mapper.readValue(json.toString(), Transaction.class);
+
+        HashMap testHashMap = transactionService.checkJSON(transaction);
+
+        assertNotNull(testHashMap);
+        assertEquals(true, testHashMap.get("hasError"));
+        assertEquals(failedMessage, testHashMap.get("message"));
+        assertEquals(400, testHashMap.get("httpStatus"));
+    }
+
+    /*
+     * Test 5 : Call checkJSON method with a transaction date in the future.
      * Expected : testHashMap = {hasError   = true,
      *                           message    = failedMessage,
      *                           httpStatus = 422}
      **/
     @Test
-    @Order(4)
+    @Order(5)
     public void shouldReturnJSONHandledInTheFuture() throws Exception {
         String tomorrow = ZonedDateTime.now().plusDays(1).toString();
         String failedMessage = "The date introduced is in the future.";
@@ -103,13 +125,13 @@ public class UnitTests {
     }
 
     /*
-     * Test 5 : Call checkJSON method with a transaction date before past 60sec.
+     * Test 6 : Call checkJSON method with a transaction date before past 60sec.
      * Expected : testHashMap = {hasError   = true,
      *                           message    = warningMessage,
      *                           httpStatus = 204}
      **/
     @Test
-    @Order(5)
+    @Order(6)
     public void shouldReturnJSONHandledIsOld() throws Exception {
         String pastMinute = ZonedDateTime.now().minusSeconds(61).toString();
         String warningMessage = "This transaction is older than 60sec. It will no longer be considered for statistics.";
@@ -128,13 +150,13 @@ public class UnitTests {
     }
 
     /*
-     * Test 6 : Call checkJSON method with JSON field not parsable.
+     * Test 7 : Call checkJSON method with JSON field not parsable.
      * Expected : testHashMap = {hasError   = true,
      *                           message    = failedMessage,
      *                           httpStatus = 204}
      **/
     @Test
-    @Order(6)
+    @Order(7)
     public void shouldReturnJSONNotParsable() throws Exception {
         String now = ZonedDateTime.now().toString();
         String failedMessage = "The fields should be parsable to following values:\n" +
@@ -155,7 +177,7 @@ public class UnitTests {
     }
 
     /*
-     * Test 7 : Call createStatistic method with 2 valid transactions.
+     * Test 8 : Call createStatistic method with 2 valid transactions.
      * Expected : Statistic = {sum    = "300.00",
      *                         avg    = "150.00",
      *                         max    = "200.00",
@@ -163,7 +185,7 @@ public class UnitTests {
      *                         count  = 2 }
      **/
     @Test
-    @Order(7)
+    @Order(8)
     @SuppressWarnings("unchecked")
     public void shouldReturnStatisticsCreated() throws Exception {
 
