@@ -8,13 +8,25 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 
+/**
+ * Service that implements methods related to statistics.
+ */
+
 @Service
 public class StatisticService {
 
+    /**
+     * Method that creates statistics based on the transactions.
+     *
+     * @param transactions
+     * @return Statistic
+     */
     public Statistic create(List<Transaction> transactions) {
 
         Statistic statistics = new Statistic();
 
+        /* lambda expressions to get avg,sum,max,min,count from all existing objects in transactions
+            and setting these values to statistics attributes */
         statistics.setCount(transactions.stream().count());
         statistics.setAvg(BigDecimal.valueOf(transactions.stream()
                 .mapToDouble(t -> t.parseAmount(t.getAmount()).doubleValue()).average().orElse(0.00))

@@ -2,6 +2,10 @@ package com.n26.model;
 
 import java.math.BigDecimal;
 
+/**
+ * Class that implements the Transaction structure.
+ */
+
 public class Transaction {
 
     private String timestamp;

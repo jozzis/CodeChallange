@@ -5,8 +5,6 @@ import com.n26.model.Statistic;
 import com.n26.model.Transaction;
 import com.n26.service.StatisticService;
 import com.n26.service.TransactionService;
-import org.hibernate.validator.constraints.br.TituloEleitoral;
-import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
@@ -16,11 +14,11 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
-import java.io.IOException;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.HashMap;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 @SpringBootTest(classes = { TransactionService.class, StatisticService.class})
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class })
@@ -37,12 +35,12 @@ public class UnitTests {
     }
 
     @Test
-    public void shouldReturnTransactionServiceNotNull() {
+    public void shouldReturnNotNullTransactionService() {
         assertNotNull(transactionService);
     }
 
     @Test
-    public void shouldReturnStatisticServiceNotNull(){
+    public void shouldReturnNotNullStatisticService(){
         assertNotNull(statisticService);
     }
 
@@ -100,7 +98,7 @@ public class UnitTests {
     }
 
     @Test
-    public void shouldReturnJSONNotParsable() throws Exception {
+    public void shouldReturnJSONHandledNotParsable() throws Exception {
         String now = ZonedDateTime.now().toString();
         String successMessage = "The fields should be parsable to following values:\n" +
                                         " amount: BigDecimal\n" +
@@ -121,7 +119,7 @@ public class UnitTests {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void shouldReturnTransactionCreated() throws Exception {
+    public void shouldReturnTransactionCreatedWithSuccess() throws Exception {
 
         String now = ZonedDateTime.now().toString();
 
@@ -138,7 +136,7 @@ public class UnitTests {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void shouldReturnTransactionStatisticsCreated() throws Exception {
+    public void shouldReturnTransactionStatisticsCalculated() throws Exception {
 
         transactionService.clearTransactions();
 

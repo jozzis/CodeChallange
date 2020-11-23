@@ -2,6 +2,10 @@ package com.n26.model;
 
 import java.math.BigDecimal;
 
+/**
+ * Class that implements the Statistic structure.
+ */
+
 public class Statistic {
 
     private String avg;
