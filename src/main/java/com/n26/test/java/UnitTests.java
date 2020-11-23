@@ -12,6 +12,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.annotation.Order;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
@@ -31,78 +32,112 @@ public class UnitTests {
     private StatisticService statisticService = new StatisticService();
     private ObjectMapper mapper = new ObjectMapper();
 
-    @Before
-    public void setUp() {
-        transactionService.createTransactionList();
-    }
-
+    /*
+     * Test 1 : Check if transactionService object is created with success
+     * Expected : NotNull
+     **/
     @Test
+    @Order(1)
     public void shouldReturnTransactionServiceNotNull() {
         assertNotNull(transactionService);
     }
 
+    /*
+     * Test 2 : Check if statisticService object is created with success
+     * Expected : NotNull
+     **/
     @Test
+    @Order(2)
     public void shouldReturnStatisticServiceNotNull(){
         assertNotNull(statisticService);
     }
 
+    /*
+     * Test 3 : Call checkJSON method with a valid JSON transaction
+     * Expected : testHashMap = {hasError   = false,
+     *                           message    = successMessage,
+     *                           httpStatus = 201}
+     **/
     @Test
+    @Order(3)
     public void shouldReturnJSONHandledWithSuccess() throws Exception {
         String now = ZonedDateTime.now().toString();
         String successMessage = "Transaction Created with Success.";
+
         JSONObject json = new JSONObject();
         json.put("amount", "10.00");
         json.put("timestamp", now);
         Transaction transaction = mapper.readValue(json.toString(), Transaction.class);
 
-        HashMap testHash = transactionService.checkJSON(transaction);
+        HashMap testHashMap = transactionService.checkJSON(transaction);
 
-        assertNotNull(testHash);
-        assertEquals(false, testHash.get("hasError"));
-        assertEquals(successMessage, testHash.get("message"));
-        assertEquals(201, testHash.get("httpStatus"));
+        assertNotNull(testHashMap);
+        assertEquals(false, testHashMap.get("hasError"));
+        assertEquals(successMessage, testHashMap.get("message"));
+        assertEquals(201, testHashMap.get("httpStatus"));
     }
 
+    /*
+     * Test 4 : Call checkJSON method with a transaction date in the future.
+     * Expected : testHashMap = {hasError   = true,
+     *                           message    = failedMessage,
+     *                           httpStatus = 422}
+     **/
     @Test
+    @Order(4)
     public void shouldReturnJSONHandledInTheFuture() throws Exception {
         String tomorrow = ZonedDateTime.now().plusDays(1).toString();
-        String successMessage = "The date introduced is in the future.";
+        String failedMessage = "The date introduced is in the future.";
 
         JSONObject json = new JSONObject();
         json.put("amount", "10.00");
         json.put("timestamp", tomorrow);
         Transaction transaction = mapper.readValue(json.toString(), Transaction.class);
 
-        HashMap testHash = transactionService.checkJSON(transaction);
+        HashMap testHashMap = transactionService.checkJSON(transaction);
 
-        assertNotNull(testHash);
-        assertEquals(true, testHash.get("hasError"));
-        assertEquals(successMessage, testHash.get("message"));
-        assertEquals(422, testHash.get("httpStatus"));
+        assertNotNull(testHashMap);
+        assertEquals(true, testHashMap.get("hasError"));
+        assertEquals(failedMessage, testHashMap.get("message"));
+        assertEquals(422, testHashMap.get("httpStatus"));
     }
 
+    /*
+     * Test 5 : Call checkJSON method with a transaction date before past 60sec.
+     * Expected : testHashMap = {hasError   = true,
+     *                           message    = warningMessage,
+     *                           httpStatus = 204}
+     **/
     @Test
-    public void shouldReturnJSONHandledIsOlder() throws Exception {
+    @Order(5)
+    public void shouldReturnJSONHandledIsOld() throws Exception {
         String pastMinute = ZonedDateTime.now().minusSeconds(61).toString();
-        String successMessage = "This transaction is older than 60sec. It will no longer be considered for statistics.";
+        String warningMessage = "This transaction is older than 60sec. It will no longer be considered for statistics.";
 
         JSONObject json = new JSONObject();
         json.put("amount", "10.00");
         json.put("timestamp", pastMinute);
         Transaction transaction = mapper.readValue(json.toString(), Transaction.class);
 
-        HashMap testHash = transactionService.checkJSON(transaction);
+        HashMap testHashMap = transactionService.checkJSON(transaction);
 
-        assertNotNull(testHash);
-        assertEquals(true, testHash.get("hasError"));
-        assertEquals(successMessage, testHash.get("message"));
-        assertEquals(204, testHash.get("httpStatus"));
+        assertNotNull(testHashMap);
+        assertEquals(true, testHashMap.get("hasError"));
+        assertEquals(warningMessage, testHashMap.get("message"));
+        assertEquals(204, testHashMap.get("httpStatus"));
     }
 
+    /*
+     * Test 6 : Call checkJSON method with JSON field not parsable.
+     * Expected : testHashMap = {hasError   = true,
+     *                           message    = failedMessage,
+     *                           httpStatus = 204}
+     **/
     @Test
+    @Order(6)
     public void shouldReturnJSONNotParsable() throws Exception {
         String now = ZonedDateTime.now().toString();
-        String successMessage = "The fields should be parsable to following values:\n" +
+        String failedMessage = "The fields should be parsable to following values:\n" +
                                         " amount: BigDecimal\n" +
                                         " timeStamp format: YYYY-MM-DD'T'hh:mm:ss.sssZ";
 
@@ -111,34 +146,26 @@ public class UnitTests {
         json.put("timestamp", now);
         Transaction transaction = mapper.readValue(json.toString(), Transaction.class);
 
-        HashMap testHash = transactionService.checkJSON(transaction);
+        HashMap testHashMap = transactionService.checkJSON(transaction);
 
-        assertNotNull(testHash);
-        assertEquals(true, testHash.get("hasError"));
-        assertEquals(successMessage, testHash.get("message"));
-        assertEquals(422, testHash.get("httpStatus"));
+        assertNotNull(testHashMap);
+        assertEquals(true, testHashMap.get("hasError"));
+        assertEquals(failedMessage, testHashMap.get("message"));
+        assertEquals(422, testHashMap.get("httpStatus"));
     }
 
+    /*
+     * Test 7 : Call createStatistic method with 2 valid transactions.
+     * Expected : Statistic = {sum    = "300.00",
+     *                         avg    = "150.00",
+     *                         max    = "200.00",
+     *                         min    = "100.00",
+     *                         count  = 2 }
+     **/
     @Test
+    @Order(7)
     @SuppressWarnings("unchecked")
-    public void shouldReturnTransactionCreated() throws Exception {
-
-        String now = ZonedDateTime.now().toString();
-
-        JSONObject json = new JSONObject();
-        json.put("amount", "10.00");
-        json.put("timestamp", now);
-
-        Transaction transaction = mapper.readValue(json.toString(), Transaction.class);
-
-        assertNotNull(transaction);
-        assertEquals(transaction.getAmount(), json.get("amount"));
-        assertEquals(transaction.getTimestamp(), json.get("timestamp"));
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void shouldReturnTransactionStatisticsCreated() throws Exception {
+    public void shouldReturnStatisticsCreated() throws Exception {
 
         transactionService.clearTransactions();
 
@@ -156,7 +183,7 @@ public class UnitTests {
 
         transactionService.addTransaction(transaction1);
         transactionService.addTransaction(transaction2);
-        Statistic statistic = statisticService.create(transactionService.getInDateTransactions());
+        Statistic statistic = statisticService.createStatistic(transactionService.getInDateTransactions());
 
         assertNotNull(statistic);
         assertEquals("300.00", statistic.getSum());

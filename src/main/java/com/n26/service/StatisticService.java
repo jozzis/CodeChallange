@@ -21,7 +21,7 @@ public class StatisticService {
      * @param transactions
      * @return Statistic
      */
-    public Statistic create(List<Transaction> transactions) {
+    public Statistic createStatistic(List<Transaction> transactions) {
 
         Statistic statistics = new Statistic();
 
